@@ -45,7 +45,7 @@ def handler(event: dict, context) -> dict:
     chat_messages.append({"role": "user", "content": user_message})
 
     payload = json.dumps({
-        "model": "nvidia/nemotron-3-super-120b-a12b:free",
+        "model": "inclusionai/ling-2.6-flash:free",
         "messages": chat_messages,
         "max_tokens": 500,
         "temperature": 0.8
