@@ -1,6 +1,7 @@
 import json
 import os
 import urllib.request
+# redeploy
 
 def handler(event: dict, context) -> dict:
     """Отправляет сообщение в OpenRouter и возвращает ответ Вани."""
