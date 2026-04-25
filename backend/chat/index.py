@@ -1,10 +1,9 @@
 import json
 import os
 import urllib.request
-# redeploy
 
 def handler(event: dict, context) -> dict:
-    """Отправляет сообщение в OpenRouter и возвращает ответ Вани."""
+    """Отправляет сообщение в Gemini и возвращает ответ Вани."""
     if event.get('httpMethod') == 'OPTIONS':
         return {
             'statusCode': 200,
@@ -28,44 +27,31 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Сообщение не указано'})
         }
 
-    api_key = os.environ.get('GROQ_API_KEY', '')
+    api_key = os.environ.get('GEMINI_API_KEY', '')
 
-    chat_messages = [
-        {
-            "role": "system",
-            "content": "Ты Ваня — дружелюбный и эмоциональный ИИ-ассистент. Общаешься по-русски, тепло и живо, используешь эмодзи. Отвечаешь кратко и по делу, но с характером."
-        }
-    ]
+    system_prompt = "Ты Ваня — дружелюбный и эмоциональный ИИ-ассистент. Общаешься по-русски, тепло и живо, используешь эмодзи. Отвечаешь кратко и по делу, но с характером."
 
+    contents = []
     for msg in messages[-10:]:
-        chat_messages.append({
-            "role": "user" if msg.get("role") == "user" else "assistant",
-            "content": msg.get("text", "")
+        contents.append({
+            "role": "user" if msg.get("role") == "user" else "model",
+            "parts": [{"text": msg.get("text", "")}]
         })
-
-    chat_messages.append({"role": "user", "content": user_message})
+    contents.append({"role": "user", "parts": [{"text": user_message}]})
 
     payload = json.dumps({
-        "model": "llama-3.1-8b-instant",
-        "messages": chat_messages,
-        "max_tokens": 500,
-        "temperature": 0.8
+        "system_instruction": {"parts": [{"text": system_prompt}]},
+        "contents": contents,
+        "generationConfig": {"maxOutputTokens": 500, "temperature": 0.8}
     }).encode('utf-8')
 
-    req = urllib.request.Request(
-        "https://api.groq.com/openai/v1/chat/completions",
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        },
-        method="POST"
-    )
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
 
     with urllib.request.urlopen(req, timeout=25) as resp:
         result = json.loads(resp.read().decode('utf-8'))
 
-    reply = result['choices'][0]['message']['content']
+    reply = result['candidates'][0]['content']['parts'][0]['text']
 
     return {
         'statusCode': 200,
