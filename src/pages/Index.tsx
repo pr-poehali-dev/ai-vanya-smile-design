@@ -191,7 +191,6 @@ export default function Index() {
             {[
               { id: "chat", label: "Чат" },
               { id: "features", label: "Возможности" },
-              { id: "contact", label: "Контакты" },
             ].map((s) => (
               <button
                 key={s.id}
@@ -385,97 +384,7 @@ export default function Index() {
           </div>
         )}
 
-        {/* CONTACT SECTION */}
-        {activeSection === "contact" && (
-          <div className="animate-fade-in-up max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-black text-white mb-3">
-                Свяжитесь с <span className="text-[hsl(var(--primary))] text-glow">нами</span> 📬
-              </h2>
-              <p className="text-white/40 text-lg">Есть вопрос или предложение? Мы всегда рады</p>
-            </div>
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Form */}
-              <div className="bg-[hsl(220,25%,10%)] border border-white/8 rounded-3xl p-8">
-                {!formSent ? (
-                  <form onSubmit={handleFormSubmit} className="space-y-4">
-                    <div>
-                      <label className="text-white/60 text-sm mb-1.5 block">Ваше имя</label>
-                      <input
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Как вас зовут?"
-                        className="w-full bg-[hsl(220,20%,14%)] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/25 text-sm outline-none focus:border-[hsl(var(--primary))]/50 transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-white/60 text-sm mb-1.5 block">Email</label>
-                      <input
-                        required
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="your@email.com"
-                        className="w-full bg-[hsl(220,20%,14%)] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/25 text-sm outline-none focus:border-[hsl(var(--primary))]/50 transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-white/60 text-sm mb-1.5 block">Сообщение</label>
-                      <textarea
-                        required
-                        rows={4}
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        placeholder="Напишите, чем мы можем помочь..."
-                        className="w-full bg-[hsl(220,20%,14%)] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/25 text-sm outline-none focus:border-[hsl(var(--primary))]/50 transition-colors resize-none"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="w-full gradient-blue text-[hsl(220,30%,7%)] font-bold py-3 rounded-xl hover:scale-[1.02] transition-transform duration-200 glow-blue-sm"
-                    >
-                      Отправить сообщение ✉️
-                    </button>
-                  </form>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-center py-8">
-                    <div className="text-5xl mb-4 animate-float">🎉</div>
-                    <h3 className="text-xl font-bold text-white mb-2">Сообщение отправлено!</h3>
-                    <p className="text-white/45 text-sm mb-6">Мы свяжемся с вами в ближайшее время</p>
-                    <button
-                      onClick={() => { setFormSent(false); setFormData({ name: "", email: "", message: "" }); }}
-                      className="text-[hsl(var(--primary))] text-sm hover:underline"
-                    >
-                      Отправить ещё
-                    </button>
-                  </div>
-                )}
-              </div>
 
-              {/* Contacts */}
-              <div className="space-y-4">
-                {[
-                  { emoji: "📧", label: "Email", value: "vanya@example.com", sub: "Ответим в течение дня" },
-                  { emoji: "💬", label: "Telegram", value: "@vanya_ai_bot", sub: "Мгновенные ответы" },
-                  { emoji: "📞", label: "Телефон", value: "+7 (999) 123-45-67", sub: "Пн–Пт, 9:00–18:00" },
-                  { emoji: "📍", label: "Офис", value: "Москва, ул. Арбат, 1", sub: "Рады встрече!" },
-                ].map((c) => (
-                  <div key={c.label} className="bg-[hsl(220,25%,10%)] border border-white/8 rounded-2xl p-5 flex items-center gap-4 hover:border-[hsl(var(--primary))]/30 transition-all duration-200">
-                    <div className="w-11 h-11 rounded-xl bg-[hsl(205,60%,12%)] border border-[hsl(var(--primary))]/20 flex items-center justify-center text-xl flex-shrink-0">
-                      {c.emoji}
-                    </div>
-                    <div>
-                      <p className="text-white/40 text-xs mb-0.5">{c.label}</p>
-                      <p className="text-white font-semibold text-sm">{c.value}</p>
-                      <p className="text-white/30 text-xs">{c.sub}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* FOOTER */}
