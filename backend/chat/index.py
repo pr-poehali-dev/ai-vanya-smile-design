@@ -27,31 +27,45 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Сообщение не указано'})
         }
 
-    api_key = os.environ.get('GEMINI_API_KEY', '')
+    api_key = os.environ.get('OPENROUTER_API_KEY', '')
 
-    system_prompt = "Ты Ваня — дружелюбный и эмоциональный ИИ-ассистент. Общаешься по-русски, тепло и живо, используешь эмодзи. Отвечаешь кратко и по делу, но с характером."
+    chat_messages = [
+        {
+            "role": "system",
+            "content": "Ты Ваня — дружелюбный и эмоциональный ИИ-ассистент. Общаешься по-русски, тепло и живо, используешь эмодзи. Отвечаешь кратко и по делу, но с характером."
+        }
+    ]
 
-    contents = []
     for msg in messages[-10:]:
-        contents.append({
-            "role": "user" if msg.get("role") == "user" else "model",
-            "parts": [{"text": msg.get("text", "")}]
+        chat_messages.append({
+            "role": "user" if msg.get("role") == "user" else "assistant",
+            "content": msg.get("text", "")
         })
-    contents.append({"role": "user", "parts": [{"text": user_message}]})
+
+    chat_messages.append({"role": "user", "content": user_message})
 
     payload = json.dumps({
-        "system_instruction": {"parts": [{"text": system_prompt}]},
-        "contents": contents,
-        "generationConfig": {"maxOutputTokens": 500, "temperature": 0.8}
+        "model": "mistralai/mistral-7b-instruct:free",
+        "messages": chat_messages,
+        "max_tokens": 500,
+        "temperature": 0.8
     }).encode('utf-8')
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
-    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+    req = urllib.request.Request(
+        "https://openrouter.ai/api/v1/chat/completions",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "X-Title": "Vanya AI"
+        },
+        method="POST"
+    )
 
     with urllib.request.urlopen(req, timeout=25) as resp:
         result = json.loads(resp.read().decode('utf-8'))
 
-    reply = result['candidates'][0]['content']['parts'][0]['text']
+    reply = result['choices'][0]['message']['content']
 
     return {
         'statusCode': 200,
