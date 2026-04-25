@@ -121,7 +121,8 @@ export default function Index() {
       return;
     }
     window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(msg.text.replace(/[\u{1F000}-\u{1FFFF}]/gu, ""));
+    const cleanText = msg.text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "").trim();
+    const utt = new SpeechSynthesisUtterance(cleanText);
     utt.lang = "ru-RU";
     utt.rate = 0.95;
     utt.pitch = 1.1;
