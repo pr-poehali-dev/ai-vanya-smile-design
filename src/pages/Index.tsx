@@ -114,7 +114,10 @@ export default function Index() {
   };
 
   const speak = (msg: Message) => {
-    if (!("speechSynthesis" in window)) return;
+    if (!("speechSynthesis" in window)) {
+      alert("Ваш браузер не поддерживает озвучивание 😔");
+      return;
+    }
     if (speakingId === msg.id) {
       window.speechSynthesis.cancel();
       setSpeakingId(null);
@@ -122,14 +125,29 @@ export default function Index() {
     }
     window.speechSynthesis.cancel();
     const cleanText = msg.text.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "").trim();
-    const utt = new SpeechSynthesisUtterance(cleanText);
-    utt.lang = "ru-RU";
-    utt.rate = 0.95;
-    utt.pitch = 1.1;
-    setSpeakingId(msg.id);
-    utt.onend = () => setSpeakingId(null);
-    utt.onerror = () => setSpeakingId(null);
-    window.speechSynthesis.speak(utt);
+    const doSpeak = () => {
+      const utt = new SpeechSynthesisUtterance(cleanText);
+      const voices = window.speechSynthesis.getVoices();
+      const ruVoice = voices.find((v) => v.lang.startsWith("ru"));
+      if (ruVoice) utt.voice = ruVoice;
+      utt.lang = "ru-RU";
+      utt.rate = 0.95;
+      utt.pitch = 1.1;
+      setSpeakingId(msg.id);
+      utt.onend = () => setSpeakingId(null);
+      utt.onerror = () => setSpeakingId(null);
+      window.speechSynthesis.speak(utt);
+    };
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      doSpeak();
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.onvoiceschanged = null;
+        doSpeak();
+      };
+      setTimeout(doSpeak, 300);
+    }
   };
 
   const toggleRecording = () => {
