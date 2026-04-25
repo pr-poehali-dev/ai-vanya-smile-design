@@ -9,15 +9,6 @@ interface Message {
   time: string;
 }
 
-const DEMO_RESPONSES = [
-  { text: "Привет! Я Ваня — твой умный помощник 🤖 Чем могу помочь сегодня?", emoji: "🤖" },
-  { text: "Отличный вопрос! Я обрабатываю миллионы данных в секунду, чтобы дать тебе лучший ответ 🚀", emoji: "🚀" },
-  { text: "Понял тебя! Давай разберёмся вместе. Я всегда рядом 💙", emoji: "💙" },
-  { text: "Это интересно! Могу рассказать подробнее или помочь с чем-то ещё? ✨", emoji: "✨" },
-  { text: "Конечно! Я готов помочь тебе с любым вопросом 24/7 🌟", emoji: "🌟" },
-  { text: "Хороший выбор! Я уже анализирую информацию для тебя 🧠", emoji: "🧠" },
-];
-
 const FEATURES = [
   {
     emoji: "💬",
@@ -69,8 +60,6 @@ export default function Index() {
   const [isRecording, setIsRecording] = useState(false);
   const [speakingId, setSpeakingId] = useState<number | null>(null);
   const [activeSection, setActiveSection] = useState("chat");
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [formSent, setFormSent] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<{ stop: () => void } | null>(null);
   const msgIdRef = useRef(2);
@@ -167,11 +156,6 @@ export default function Index() {
     recognitionRef.current = rec;
     rec.start();
     setIsRecording(true);
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormSent(true);
   };
 
   return (
