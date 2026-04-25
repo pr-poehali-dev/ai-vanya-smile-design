@@ -46,7 +46,7 @@ def handler(event: dict, context) -> dict:
     chat_messages.append({"role": "user", "content": user_message})
 
     payload = json.dumps({
-        "model": "openai/gpt-4o-mini",
+        "model": "meta-llama/llama-3.3-8b-instruct:free",
         "messages": chat_messages,
         "max_tokens": 500,
         "temperature": 0.8
