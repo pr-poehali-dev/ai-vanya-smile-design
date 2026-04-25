@@ -28,7 +28,7 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'error': 'Сообщение не указано'})
         }
 
-    api_key = os.environ.get('OPENROUTER_API_KEY', '')
+    api_key = os.environ.get('GROQ_API_KEY', '')
 
     chat_messages = [
         {
@@ -46,20 +46,18 @@ def handler(event: dict, context) -> dict:
     chat_messages.append({"role": "user", "content": user_message})
 
     payload = json.dumps({
-        "model": "meta-llama/llama-3.3-8b-instruct:free",
+        "model": "llama-3.1-8b-instant",
         "messages": chat_messages,
         "max_tokens": 500,
         "temperature": 0.8
     }).encode('utf-8')
 
     req = urllib.request.Request(
-        "https://openrouter.ai/api/v1/chat/completions",
+        "https://api.groq.com/openai/v1/chat/completions",
         data=payload,
         headers={
             "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://poehali.dev",
-            "X-Title": "Vanya AI"
+            "Content-Type": "application/json"
         },
         method="POST"
     )
