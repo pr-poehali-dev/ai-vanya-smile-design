@@ -79,7 +79,7 @@ export default function Index() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const sendMessage = (text: string) => {
+  const sendMessage = async (text: string) => {
     if (!text.trim()) return;
     const userMsg: Message = {
       id: msgIdRef.current++,
@@ -90,18 +90,31 @@ export default function Index() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsTyping(true);
-    setTimeout(() => {
-      const resp = DEMO_RESPONSES[Math.floor(Math.random() * DEMO_RESPONSES.length)];
+    try {
+      const res = await fetch("https://functions.poehali.dev/b6dfdeff-7545-40e8-a030-1cc5ab366d39", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text.trim(), messages }),
+      });
+      const data = await res.json();
       const aiMsg: Message = {
         id: msgIdRef.current++,
         role: "ai",
-        text: resp.text,
-        emoji: resp.emoji,
+        text: data.reply || "Что-то пошло не так 😔",
         time: getTime(),
       };
-      setIsTyping(false);
       setMessages((prev) => [...prev, aiMsg]);
-    }, 1200 + Math.random() * 800);
+    } catch {
+      const aiMsg: Message = {
+        id: msgIdRef.current++,
+        role: "ai",
+        text: "Упс, не могу подключиться 😔 Попробуй ещё раз!",
+        time: getTime(),
+      };
+      setMessages((prev) => [...prev, aiMsg]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
